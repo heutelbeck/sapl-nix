@@ -22,8 +22,8 @@
 #   release archives and commits updated hashes to nix/hashes.json.
 #   To compute hashes manually:
 #
-#     nix hash file --sri sapl-node-<version>-linux-amd64.tar.gz
-#     nix hash file --sri sapl-node-<version>-linux-arm64.tar.gz
+#     nix hash file --sri sapl-<version>-linux-amd64.tar.gz
+#     nix hash file --sri sapl-<version>-linux-arm64.tar.gz
 
 { lib, stdenv, fetchurl, autoPatchelfHook, glibc }:
 
@@ -53,11 +53,11 @@ stdenv.mkDerivation {
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/heutelbeck/sapl-policy-engine/releases/download/snapshot-node/sapl-node-${version}-${platform}.tar.gz";
+    url = "https://github.com/heutelbeck/sapl-policy-engine/releases/download/snapshot-node/sapl-${version}-${platform}.tar.gz";
     sha256 = hashes.${platform};
   };
 
-  # The archive contains files at the top level (sapl-node, LICENSE, README.md),
+  # The archive contains files at the top level (sapl, LICENSE, README.md),
   # not inside a subdirectory.
   sourceRoot = ".";
 
@@ -65,7 +65,9 @@ stdenv.mkDerivation {
   buildInputs = lib.optionals (!isFullyStatic) [ glibc ];
 
   installPhase = ''
-    install -Dm755 sapl-node $out/bin/sapl-node
+    install -Dm755 sapl $out/bin/sapl
+    install -Dm644 -t $out/share/man/man1 man/*.1
+    install -Dm644 completion/sapl.bash $out/share/bash-completion/completions/sapl
   '';
 
   # GraalVM native images should not be stripped.
@@ -76,6 +78,6 @@ stdenv.mkDerivation {
     homepage = "https://github.com/heutelbeck/sapl-policy-engine";
     license = lib.licenses.asl20;
     platforms = builtins.attrNames platformMap;
-    mainProgram = "sapl-node";
+    mainProgram = "sapl";
   };
 }

@@ -42,16 +42,18 @@
       # Per-platform packages. Use `nix build` or reference as a dependency.
       packages = forAllSystems (pkgs: {
         sapl-node = pkgs.callPackage ./nix/package.nix { };
+        sapl-language-server = pkgs.callPackage ./nix/lsp-package.nix { };
         default = self.packages.${pkgs.system}.sapl-node;
       });
 
       # NixOS module providing services.sapl-node with full declarative config.
       nixosModules.default = import ./nix/module.nix self;
 
-      # Overlay that adds sapl-node to the pkgs set.
+      # Overlay that adds sapl-node and sapl-language-server to the pkgs set.
       # Usage: { nixpkgs.overlays = [ inputs.sapl-node.overlays.default ]; }
       overlays.default = final: prev: {
         sapl-node = self.packages.${final.system}.sapl-node;
+        sapl-language-server = self.packages.${final.system}.sapl-language-server;
       };
     };
 }
