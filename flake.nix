@@ -22,7 +22,7 @@
 #     tls.enable = false;
 #     policies.hello = ''
 #       policy "hello"
-#       permit action == "read"
+#       permit action == "read";
 #     '';
 #   };
 #

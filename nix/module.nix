@@ -71,7 +71,7 @@
 #     policies.tick = ''
 #       policy "tick"
 #       permit
-#         time.secondOf(<time.now>) % 5 == 0
+#         time.secondOf(<time.now>) % 5 == 0;
 #     '';
 #   };
 #
@@ -93,7 +93,7 @@
 #     policies = {
 #       allow-read = ''
 #         policy "allow-read"
-#         permit action == "read"
+#         permit action == "read";
 #       '';
 #       deny-all = ''
 #         policy "deny-all"
@@ -143,9 +143,19 @@ let
   #
   # The bundle is unsigned here. Signing happens at activation time if
   # signingKey is configured, keeping the private key out of the Nix store.
+  #
+  # Before 4.2.0 the engine requires a configurationId in pdp.json. From 4.2.0
+  # on it lives in the bundle manifest, is derived from the bundle content by
+  # `sapl bundle create`, and pdp.json must not contain it. A configurationId
+  # set in pdpConfig takes precedence on older engines.
+  bundlePdpConfig =
+    if lib.versionOlder cfg.package.version "4.2.0"
+    then { configurationId = "nix-managed"; } // cfg.pdpConfig
+    else cfg.pdpConfig;
+
   managedBundle = pkgs.runCommand "sapl-node-managed.saplbundle" { } (''
     mkdir -p input $out
-    cp ${jsonFormat.generate "pdp.json" cfg.pdpConfig} input/pdp.json
+    cp ${jsonFormat.generate "pdp.json" bundlePdpConfig} input/pdp.json
   '' + lib.concatStrings (lib.mapAttrsToList (name: content: ''
     cp ${pkgs.writeText "${name}.sapl" content} input/${name}.sapl
   '') cfg.policies) + ''
@@ -450,11 +460,11 @@ in
         {
           allow-read = '''
             policy "allow-read"
-            permit action == "read"
+            permit action == "read";
           ''';
           deny-write = '''
             policy "deny-write"
-            deny action == "write"
+            deny action == "write";
           ''';
         }
       '';
