@@ -40,9 +40,13 @@
     in
     {
       # Per-platform packages. Use `nix build` or reference as a dependency.
+      # The unsuffixed packages track the latest release; the -snapshot
+      # variants track the latest master build of the engine.
       packages = forAllSystems (pkgs: {
-        sapl-node = pkgs.callPackage ./nix/package.nix { };
-        sapl-language-server = pkgs.callPackage ./nix/lsp-package.nix { };
+        sapl-node = pkgs.callPackage ./nix/package.nix { channel = "release"; };
+        sapl-node-snapshot = pkgs.callPackage ./nix/package.nix { channel = "snapshot"; };
+        sapl-language-server = pkgs.callPackage ./nix/lsp-package.nix { channel = "release"; };
+        sapl-language-server-snapshot = pkgs.callPackage ./nix/lsp-package.nix { channel = "snapshot"; };
         default = self.packages.${pkgs.system}.sapl-node;
       });
 
@@ -52,8 +56,9 @@
       # Overlay that adds sapl-node and sapl-language-server to the pkgs set.
       # Usage: { nixpkgs.overlays = [ inputs.sapl-node.overlays.default ]; }
       overlays.default = final: prev: {
-        sapl-node = self.packages.${final.system}.sapl-node;
-        sapl-language-server = self.packages.${final.system}.sapl-language-server;
+        inherit (self.packages.${final.system})
+          sapl-node sapl-node-snapshot
+          sapl-language-server sapl-language-server-snapshot;
       };
     };
 }

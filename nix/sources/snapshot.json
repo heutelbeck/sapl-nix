@@ -1,0 +1,17 @@
+{
+  "version": "4.2.0-SNAPSHOT",
+  "node": {
+    "tag": "snapshot-node",
+    "hashes": {
+      "linux-amd64": "sha256-5GolyLBx3/k86QAayCES6W1rm08eLjiLLjHKKek9j0s=",
+      "linux-arm64": "sha256-7KWPEGUqA4pt4yyb6/JkVsXVkh055MN/GHxC1UGH5xQ="
+    }
+  },
+  "languageServer": {
+    "tag": "snapshot",
+    "hashes": {
+      "linux-amd64": "sha256-yhuUW32652QecBvn6QqIsTOoKxwOUvrwNqoL5aUUZ1k=",
+      "linux-arm64": "sha256-cReXc28uj9RzPHSXjqqZSsow7FjnGq76/uFaXPsesgM="
+    }
+  }
+}

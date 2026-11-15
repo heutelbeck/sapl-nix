@@ -135,7 +135,7 @@ let
 
   # Build an unsigned .saplbundle from inline policies at Nix build time.
   #
-  # The derivation runs `sapl-node bundle create` to package all .sapl files
+  # The derivation runs `sapl bundle create` to package all .sapl files
   # and the pdp.json into a single archive. This guarantees that:
   #   - The entire policy set is validated at build time
   #   - Deployment is a single file replacement (atomic via mv)
@@ -149,14 +149,14 @@ let
   '' + lib.concatStrings (lib.mapAttrsToList (name: content: ''
     cp ${pkgs.writeText "${name}.sapl" content} input/${name}.sapl
   '') cfg.policies) + ''
-    ${sapl-node}/bin/sapl-node bundle create -i input -o $out/managed.saplbundle
+    ${lib.getExe sapl-node} bundle create -i input -o $out/managed.saplbundle
   '');
 
   # Shell fragment that signs the deployed bundle using a runtime key.
   # Only included when signingKey is configured. Runs at activation time
   # (not at Nix build time) so the private key never enters the Nix store.
   signBundleScript = lib.optionalString (cfg.signingKey != null) ''
-    ${sapl-node}/bin/sapl-node bundle sign \
+    ${lib.getExe sapl-node} bundle sign \
       -b ${bundlesPath}/managed.saplbundle \
       -k ${cfg.signingKey} \
       --key-id ${lib.escapeShellArg cfg.signingKeyId}
@@ -646,7 +646,7 @@ in
           RuntimeDirectory = "sapl-node";
           RuntimeDirectoryMode = "0700";
 
-          ExecStart = "${cfg.package}/bin/sapl-node ${springArgs}";
+          ExecStart = "${lib.getExe cfg.package} ${springArgs}";
 
           Restart = "on-failure";
           RestartSec = "5s";

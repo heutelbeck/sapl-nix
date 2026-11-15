@@ -1,0 +1,17 @@
+{
+  "version": "4.1.2",
+  "node": {
+    "tag": "v4.1.2",
+    "hashes": {
+      "linux-amd64": "sha256-/3VDAum8kWsOQ8FhF1z8nPcrgvhpIu+gXtyTMi6y1NM=",
+      "linux-arm64": "sha256-Ea/UYX2iAXba37qGr+vfiGl4eGzgVjALBt5eJIyXH+o="
+    }
+  },
+  "languageServer": {
+    "tag": "v4.1.2",
+    "hashes": {
+      "linux-amd64": "sha256-HQmLiBLe9kDWBbWVI6UCORebB0QQHB2bsWwjiSxOHTI=",
+      "linux-arm64": "sha256-iY1MMpyBgC3afA7GkP3VfzsUgSTlJA873UFu9kyOFcI="
+    }
+  }
+}

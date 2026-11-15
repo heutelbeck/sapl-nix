@@ -1,6 +1,10 @@
 # SAPL Node binary package
 #
 # Fetches the pre-built sapl-node native binary from GitHub releases.
+# `channel` selects the source: "release" (latest tagged release) or
+# "snapshot" (latest master build, published under the moving
+# snapshot-node tag). Version, release tag and hashes come from
+# sources/<channel>.json.
 # The binary serves dual purpose: PDP server and CLI tool for bundle
 # management and credential generation.
 #
@@ -16,29 +20,26 @@
 #                  autoPatchelfHook patches the ELF interpreter and RPATH
 #                  for NixOS compatibility.
 #
-# Updating hashes:
+# Updating sources:
 #
-#   The CI publish job automatically computes SRI hashes after uploading
-#   release archives and commits updated hashes to nix/hashes.json.
-#   To compute hashes manually:
+#   The sapl-policy-engine CI rewrites sources/release.json on every release
+#   tag and sources/snapshot.json on every master snapshot build, using the
+#   hashes of the archives as published on GitHub. To compute a hash
+#   manually:
 #
-#     nix hash file --sri sapl-<version>-linux-amd64.tar.gz
-#     nix hash file --sri sapl-<version>-linux-arm64.tar.gz
+#     nix store prefetch-file --json <archive url>
 
-{ lib, stdenv, fetchurl, autoPatchelfHook, glibc }:
+{ lib, stdenv, fetchurl, autoPatchelfHook, glibc, channel ? "release" }:
 
 let
-  version = "4.0.0-SNAPSHOT";
+  source = builtins.fromJSON (builtins.readFile ./sources/${channel}.json);
+  inherit (source) version;
 
   # Maps Nix system identifiers to release archive platform suffixes.
   platformMap = {
     "x86_64-linux" = "linux-amd64";
     "aarch64-linux" = "linux-arm64";
   };
-
-  # SRI hashes for each platform archive, loaded from hashes.json.
-  # The CI publish job updates hashes.json automatically after each release.
-  hashes = builtins.fromJSON (builtins.readFile ./hashes.json);
 
   platform = platformMap.${stdenv.hostPlatform.system}
     or (throw "sapl-node: unsupported platform ${stdenv.hostPlatform.system}");
@@ -53,8 +54,8 @@ stdenv.mkDerivation {
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/heutelbeck/sapl-policy-engine/releases/download/snapshot-node/sapl-${version}-${platform}.tar.gz";
-    sha256 = hashes.${platform};
+    url = "https://github.com/heutelbeck/sapl-policy-engine/releases/download/${source.node.tag}/sapl-${version}-${platform}.tar.gz";
+    hash = source.node.hashes.${platform};
   };
 
   # The archive contains files at the top level (sapl, LICENSE, README.md),

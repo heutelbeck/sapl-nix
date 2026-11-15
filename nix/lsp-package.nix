@@ -7,29 +7,21 @@
 # Platform differences are the same as sapl-node: fully static on
 # x86_64-linux (musl), glibc-linked on aarch64-linux (autoPatchelf).
 #
-# Updating hashes:
-#
-#   The CI publish job automatically computes SRI hashes after uploading
-#   release archives and commits updated hashes to nix/lsp-hashes.json.
-#   To compute hashes manually:
-#
-#     nix hash file --sri sapl-language-server-<version>-linux-amd64.tar.gz
-#     nix hash file --sri sapl-language-server-<version>-linux-arm64.tar.gz
+# `channel` selects "release" or "snapshot" exactly as in package.nix;
+# version, release tag and hashes come from sources/<channel>.json, which
+# the sapl-policy-engine CI keeps up to date.
 
-{ lib, stdenv, fetchurl, autoPatchelfHook, glibc, installShellFiles }:
+{ lib, stdenv, fetchurl, autoPatchelfHook, glibc, installShellFiles, channel ? "release" }:
 
 let
-  version = "4.0.0-SNAPSHOT";
+  source = builtins.fromJSON (builtins.readFile ./sources/${channel}.json);
+  inherit (source) version;
 
   # Maps Nix system identifiers to release archive platform suffixes.
   platformMap = {
     "x86_64-linux" = "linux-amd64";
     "aarch64-linux" = "linux-arm64";
   };
-
-  # SRI hashes for each platform archive, loaded from lsp-hashes.json.
-  # The CI publish job updates lsp-hashes.json automatically after each release.
-  hashes = builtins.fromJSON (builtins.readFile ./lsp-hashes.json);
 
   platform = platformMap.${stdenv.hostPlatform.system}
     or (throw "sapl-language-server: unsupported platform ${stdenv.hostPlatform.system}");
@@ -44,8 +36,8 @@ stdenv.mkDerivation {
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/heutelbeck/sapl-policy-engine/releases/download/snapshot/sapl-language-server-${version}-${platform}.tar.gz";
-    sha256 = hashes.${platform};
+    url = "https://github.com/heutelbeck/sapl-policy-engine/releases/download/${source.languageServer.tag}/sapl-language-server-${version}-${platform}.tar.gz";
+    hash = source.languageServer.hashes.${platform};
   };
 
   # The archive contains files at the top level (sapl-language-server, LICENSE, README.md),
