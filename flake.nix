@@ -1,32 +1,14 @@
-# SAPL Node Nix Flake
+# SAPL Nix Flake
 #
-# Provides the sapl-node binary package, a NixOS module for declarative
-# PDP server deployment, and an overlay for integrating with nixpkgs.
+# SAPL Node (PDP server and CLI) and the SAPL Language Server, each in a
+# release and a snapshot channel, plus a NixOS module (services.sapl-node)
+# and an overlay.
 #
 # Supported platforms:
 #   - x86_64-linux  (fully static, musl-linked, no runtime dependencies)
 #   - aarch64-linux (static-nolibc, links glibc dynamically, auto-patched)
 #
-# Quick start:
-#
-#   # Add to your flake inputs:
-#   sapl-node.url = "github:heutelbeck/sapl-nix";
-#
-#   # Import the NixOS module:
-#   imports = [ inputs.sapl-node.nixosModules.default ];
-#
-#   # Enable the service:
-#   services.sapl-node = {
-#     enable = true;
-#     port = 8080;
-#     tls.enable = false;
-#     policies.hello = ''
-#       policy "hello"
-#       permit action == "read";
-#     '';
-#   };
-#
-# See nix/module.nix for the full option reference.
+# Usage and examples: README.md. Module options: nix/module.nix.
 {
   description = "SAPL Node - Streaming Attribute Policy Language PDP Server";
 
