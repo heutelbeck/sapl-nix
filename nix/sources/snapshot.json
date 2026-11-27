@@ -3,15 +3,15 @@
   "node": {
     "tag": "snapshot-node",
     "hashes": {
-      "linux-amd64": "sha256-0ueSLepC2V9UgafF0aAFSPW0fhb2wyGSNNA9zl1Bp9k=",
-      "linux-arm64": "sha256-8peSJL6VgAHgjdhI28tJO9RQpkYDwSl10f6F0GjWh18="
+      "linux-amd64": "sha256-S7Ksw6w090/85lf6DLrUdb3OCr4s+w3XV2qc1nHBFSQ=",
+      "linux-arm64": "sha256-T0S++cm72q1YPJLyuR0cWndzJhSf1LohAhvGI3gJOY8="
     }
   },
   "languageServer": {
     "tag": "snapshot",
     "hashes": {
-      "linux-amd64": "sha256-X9RD5jeq87ggII77OuUOxRVgGGVzylY9Oji4NO+jS0s=",
-      "linux-arm64": "sha256-A8GL5f20m6f5s2lsATFOipXyW6T8oNF+TUech1FW5/E="
+      "linux-amd64": "sha256-7VR+fduoNHX+lJgBt8YVtrZ/b1ZHstS1kta7ScEAEMc=",
+      "linux-arm64": "sha256-JFw2FzHv7UHAbOOWEvucvpxJ3OITeiREqvdXVCUbOUA="
     }
   }
 }
